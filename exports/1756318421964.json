@@ -1,0 +1,19 @@
+{
+  "timestamp": 1756318421964,
+  "operation": {
+    "id": "webapp:react:views",
+    "refs": {
+      "id": "UV_Auth",
+      "version": "latest"
+    }
+  },
+  "projectId": "test",
+  "files": [
+    {
+      "path": "/mnt/data/test/vitereact/src/components/views/UV_Auth.tsx",
+      "type": "text",
+      "size": 7006,
+      "dependencies": false
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "timestamp": 1756318453709,
+  "operation": {
+    "id": "webapp:react:views",
+    "refs": {
+      "id": "UV_AdminDashboard",
+      "version": "1756318404471"
+    }
+  },
+  "projectId": "test",
+  "files": [
+    {
+      "path": "/mnt/data/test/vitereact/src/components/views/UV_AdminDashboard.tsx",
+      "type": "text",
+      "size": 3672,
+      "dependencies": false
+    }
+  ]
+}

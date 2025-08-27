@@ -1,0 +1,177 @@
+asyncapi: 2.0.0
+info:
+  title: Test Platform Realtime API
+  version: 1.0.0
+servers:
+  websocketServer:
+    url: ws://localhost:3000
+    protocol: wss
+channels:
+  user/auth/updates:
+    description: Channel for authentication state updates.
+    subscribe:
+      operationId: authStateUpdate
+      summary: Subscribe to authentication state updates.
+      message:
+        contentType: application/json
+        payload:
+          type: object
+          properties:
+            current_user:
+              type: object
+              properties:
+                id:
+                  type: string
+                email:
+                  type: string
+                name:
+                  type: string
+                created_at:
+                  type: string
+              nullable: true
+            auth_token:
+              type: string
+              nullable: true
+            authentication_status:
+              type: object
+              properties:
+                is_authenticated:
+                  type: boolean
+                is_loading:
+                  type: boolean
+            error_message:
+              type: string
+              nullable: true
+  content/updates:
+    description: Channel for content updates.
+    subscribe:
+      operationId: contentStateUpdate
+      summary: Subscribe to content state updates.
+      message:
+        contentType: application/json
+        payload:
+          type: object
+          properties:
+            content_list:
+              type: array
+              items:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  title:
+                    type: string
+                  description:
+                    type: string
+                  created_at:
+                    type: string
+                  creator_id:
+                    type: string
+                  tags:
+                    type: array
+                    items:
+                      type: string
+            is_loading:
+              type: boolean
+            error_message:
+              type: string
+              nullable: true
+  user/notifications:
+    description: Channel for user notifications.
+    subscribe:
+      operationId: notificationUpdate
+      summary: Subscribe to user notifications.
+      message:
+        contentType: application/json
+        payload:
+          type: object
+          properties:
+            notification_id:
+              type: string
+            user_id:
+              type: string
+            message:
+              type: string
+            created_at:
+              type: string
+            is_read:
+              type: boolean
+  user/comments:
+    description: Channel for comments on content.
+    subscribe:
+      operationId: commentsUpdate
+      summary: Subscribe to comment updates on content.
+      message:
+        contentType: application/json
+        payload:
+          type: array
+          items:
+            type: object
+            properties:
+              comment_id:
+                type: string
+              content_id:
+                type: string
+              user_id:
+                type: string
+              comment_text:
+                type: string
+              created_at:
+                type: string
+              parent_comment_id:
+                type: string
+                nullable: true
+  user/likes:
+    description: Channel for likes on content.
+    subscribe:
+      operationId: likesUpdate
+      summary: Subscribe to updates on likes for content.
+      message:
+        contentType: application/json
+        payload:
+          type: array
+          items:
+            type: object
+            properties:
+              like_id:
+                type: string
+              content_id:
+                type: string
+              user_id:
+                type: string
+              created_at:
+                type: string
+components:
+  schemas:
+    CreateUserInput:
+      $ref: "#/components/schemas/createUserInputSchema"
+    UpdateUserInput:
+      $ref: "#/components/schemas/updateUserInputSchema"
+    SearchUserInput:
+      $ref: "#/components/schemas/searchUserInputSchema"
+    CreateContentInput:
+      $ref: "#/components/schemas/createContentInputSchema"
+    UpdateContentInput:
+      $ref: "#/components/schemas/updateContentInputSchema"
+    SearchContentInput:
+      $ref: "#/components/schemas/searchContentInputSchema"
+    CreateCommentInput:
+      $ref: "#/components/schemas/createCommentInputSchema"
+    UpdateCommentInput:
+      $ref: "#/components/schemas/updateCommentInputSchema"
+    SearchCommentInput:
+      $ref: "#/components/schemas/searchCommentInputSchema"
+    CreateLikeInput:
+      $ref: "#/components/schemas/createLikeInputSchema"
+    SearchLikeInput:
+      $ref: "#/components/schemas/searchLikeInputSchema"
+    UpdateUserSettingsInput:
+      $ref: "#/components/schemas/updateUserSettingsInputSchema"
+    CreateNotificationInput:
+      $ref: "#/components/schemas/createNotificationInputSchema"
+    SearchNotificationInput:
+      $ref: "#/components/schemas/searchNotificationInputSchema"
+    CreateFeedbackInput:
+      $ref: "#/components/schemas/createFeedbackInputSchema"
+    SearchFeedbackInput:
+      $ref: "#/components/schemas/searchFeedbackInputSchema"

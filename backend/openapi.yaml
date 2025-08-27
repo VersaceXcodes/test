@@ -1,0 +1,576 @@
+openapi: 3.0.0
+info:
+  title: Test Platform API
+  version: 1.0.0
+servers:
+  - url: http://localhost:3000/api
+paths:
+  /auth/register:
+    post:
+      summary: Register a new user
+      operationId: registerUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateUserInput"
+      responses:
+        "201":
+          description: User created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  auth_token:
+                    type: string
+                  user:
+                    $ref: "#/components/schemas/User"
+  /auth/login:
+    post:
+      summary: User login
+      operationId: loginUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        "200":
+          description: User logged in successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  auth_token:
+                    type: string
+                  user:
+                    $ref: "#/components/schemas/User"
+  /auth/password-recovery:
+    post:
+      summary: Password recovery
+      operationId: recoverPassword
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+      responses:
+        "200":
+          description: Password recovery instructions sent
+  /users/{user_id}:
+    get:
+      summary: Get user profile
+      operationId: getUserProfile
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: User profile information
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+  /dashboard:
+    get:
+      summary: Get personalized dashboard content
+      operationId: getDashboardContent
+      parameters:
+        - name: user_id
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Dashboard content
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Content"
+  /content:
+    get:
+      summary: Search content
+      operationId: searchContent
+      parameters:
+        - name: query
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 10
+        - name: offset
+          in: query
+          schema:
+            type: integer
+            default: 0
+        - name: sort_by
+          in: query
+          schema:
+            type: string
+            enum:
+              - title
+              - created_at
+            default: created_at
+        - name: sort_order
+          in: query
+          schema:
+            type: string
+            enum:
+              - asc
+              - desc
+            default: desc
+      responses:
+        "200":
+          description: List of content
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Content"
+    post:
+      summary: Create new content
+      operationId: createContent
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateContentInput"
+      responses:
+        "201":
+          description: Content created successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Content"
+  /content/{content_id}:
+    get:
+      summary: Get content details
+      operationId: getContentDetails
+      parameters:
+        - name: content_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Content details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Content"
+    put:
+      summary: Update content
+      operationId: updateContent
+      parameters:
+        - name: content_id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateContentInput"
+      responses:
+        "200":
+          description: Content updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Content"
+    delete:
+      summary: Delete content
+      operationId: deleteContent
+      parameters:
+        - name: content_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: Content deleted successfully
+  /content/{content_id}/comments:
+    get:
+      summary: Get comments for content
+      operationId: getComments
+      parameters:
+        - name: content_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of comments
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Comment"
+    post:
+      summary: Comment on a content
+      operationId: commentOnContent
+      parameters:
+        - name: content_id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateCommentInput"
+      responses:
+        "201":
+          description: Comment added successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Comment"
+  /comments/{comment_id}:
+    put:
+      summary: Update a comment
+      operationId: updateComment
+      parameters:
+        - name: comment_id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateCommentInput"
+      responses:
+        "200":
+          description: Comment updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Comment"
+    delete:
+      summary: Delete a comment
+      operationId: deleteComment
+      parameters:
+        - name: comment_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: Comment deleted successfully
+  /content/{content_id}/likes:
+    post:
+      summary: Like a content
+      operationId: likeContent
+      parameters:
+        - name: content_id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateLikeInput"
+      responses:
+        "201":
+          description: Content liked successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Like"
+  /notifications:
+    get:
+      summary: Get notifications
+      operationId: getNotifications
+      parameters:
+        - name: user_id
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 10
+        - name: offset
+          in: query
+          schema:
+            type: integer
+            default: 0
+      responses:
+        "200":
+          description: List of notifications
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Notification"
+  /user-settings:
+    get:
+      summary: Get user settings
+      operationId: getUserSettings
+      parameters:
+        - name: user_id
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: User settings
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserSettings"
+    patch:
+      summary: Update user settings
+      operationId: updateUserSettings
+      parameters:
+        - name: user_id
+          in: query
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateUserSettingsInput"
+      responses:
+        "200":
+          description: User settings updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserSettings"
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        user_id:
+          type: string
+        email:
+          type: string
+        name:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+    CreateUserInput:
+      type: object
+      properties:
+        email:
+          type: string
+        name:
+          type: string
+        password:
+          type: string
+      required:
+        - email
+        - name
+        - password
+    UpdateUserInput:
+      type: object
+      properties:
+        user_id:
+          type: string
+        email:
+          type: string
+        name:
+          type: string
+        password:
+          type: string
+    Content:
+      type: object
+      properties:
+        content_id:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        creator_id:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+          nullable: true
+    CreateContentInput:
+      type: object
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        creator_id:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+          nullable: true
+      required:
+        - title
+        - description
+        - creator_id
+    UpdateContentInput:
+      type: object
+      properties:
+        content_id:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+          nullable: true
+    Comment:
+      type: object
+      properties:
+        comment_id:
+          type: string
+        content_id:
+          type: string
+        user_id:
+          type: string
+        comment_text:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        parent_comment_id:
+          type: string
+          nullable: true
+    CreateCommentInput:
+      type: object
+      properties:
+        content_id:
+          type: string
+        user_id:
+          type: string
+        comment_text:
+          type: string
+        parent_comment_id:
+          type: string
+          nullable: true
+      required:
+        - content_id
+        - user_id
+        - comment_text
+    UpdateCommentInput:
+      type: object
+      properties:
+        comment_id:
+          type: string
+        comment_text:
+          type: string
+    Like:
+      type: object
+      properties:
+        like_id:
+          type: string
+        content_id:
+          type: string
+        user_id:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+    CreateLikeInput:
+      type: object
+      properties:
+        content_id:
+          type: string
+        user_id:
+          type: string
+      required:
+        - content_id
+        - user_id
+    UserSettings:
+      type: object
+      properties:
+        user_settings_id:
+          type: string
+        user_id:
+          type: string
+        categories:
+          type: array
+          items:
+            type: string
+        notifications_enabled:
+          type: boolean
+    UpdateUserSettingsInput:
+      type: object
+      properties:
+        user_settings_id:
+          type: string
+        categories:
+          type: array
+          items:
+            type: string
+        notifications_enabled:
+          type: boolean
+    Notification:
+      type: object
+      properties:
+        notification_id:
+          type: string
+        user_id:
+          type: string
+        message:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        is_read:
+          type: boolean

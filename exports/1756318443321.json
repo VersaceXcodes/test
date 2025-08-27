@@ -1,0 +1,19 @@
+{
+  "timestamp": 1756318443321,
+  "operation": {
+    "id": "webapp:react:views",
+    "refs": {
+      "id": "GV_SideNav",
+      "version": "latest"
+    }
+  },
+  "projectId": "test",
+  "files": [
+    {
+      "path": "/mnt/data/test/vitereact/src/components/views/GV_SideNav.tsx",
+      "type": "text",
+      "size": 2746,
+      "dependencies": false
+    }
+  ]
+}

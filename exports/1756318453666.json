@@ -1,0 +1,19 @@
+{
+  "timestamp": 1756318453666,
+  "operation": {
+    "id": "webapp:react:views",
+    "refs": {
+      "id": "UV_TaskDetails",
+      "version": "1756318404383"
+    }
+  },
+  "projectId": "test",
+  "files": [
+    {
+      "path": "/mnt/data/test/vitereact/src/components/views/UV_TaskDetails.tsx",
+      "type": "text",
+      "size": 3297,
+      "dependencies": false
+    }
+  ]
+}
