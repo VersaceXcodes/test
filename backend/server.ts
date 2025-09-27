@@ -1,7 +1,7 @@
-import express from 'express';
+import express, { type Request, type Response, type NextFunction } from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import jwt from 'jsonwebtoken';
+import jwt, { JwtPayload } from 'jsonwebtoken';
 import morgan from 'morgan';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -22,6 +22,20 @@ const { Pool } = pkg;
 
 dotenv.config();
 
+// Extend Express Request to include 'user'
+declare global {
+  namespace Express {
+    interface Request {
+      user?: {
+        user_id: string;
+        email: string;
+        name?: string;
+        created_at?: string;
+      };
+    }
+  }
+}
+
 // Error response utility
 type ErrorResponse = {
   success: false;
@@ -32,7 +46,7 @@ type ErrorResponse = {
 };
 
 function createErrorResponse(message: string, error: any = null, errorCode: string | null = null): ErrorResponse {
-  const response = {
+  const response: ErrorResponse = {
     success: false,
     message,
     timestamp: new Date().toISOString()
@@ -44,9 +58,9 @@ function createErrorResponse(message: string, error: any = null, errorCode: stri
 
   if (error && process.env.NODE_ENV === 'development') {
     response.details = {
-      name: error.name,
-      message: error.message,
-      stack: error.stack
+      name: (error as any).name,
+      message: (error as any).message,
+      stack: (error as any).stack
     };
   }
 
@@ -78,7 +92,7 @@ const app = express();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const port = process.env.PORT || 3000;
+const port = Number(process.env.PORT) || 3000;
 
 // Middleware setup
 app.use(cors({
@@ -96,7 +110,7 @@ app.use(express.static(path.join(__dirname, 'public')));
   Authentication middleware for protected routes
   Validates JWT token and attaches user info to request object
 */
-const authenticateToken = async (req, res, next) => {
+const authenticateToken = async (req: Request, res: Response, next: NextFunction) => {
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1];
 
@@ -105,7 +119,7 @@ const authenticateToken = async (req, res, next) => {
   }
 
   try {
-    const decoded = jwt.verify(token, JWT_SECRET);
+    const decoded = jwt.verify(token, JWT_SECRET as string) as JwtPayload;
     const client = await pool.connect();
     
     try {
@@ -326,7 +340,7 @@ app.get('/api/users/:user_id', authenticateToken, async (req, res) => {
 */
 app.get('/api/dashboard', authenticateToken, async (req, res) => {
   try {
-    const { user_id } = req.query;
+    const { user_id } = req.query as { user_id?: string };
 
     if (!user_id) {
       return res.status(400).json(createErrorResponse('user_id query parameter is required', null, 'MISSING_REQUIRED_PARAMETER'));
@@ -371,11 +385,11 @@ app.get('/api/dashboard', authenticateToken, async (req, res) => {
 app.get('/api/content', async (req, res) => {
   try {
     const queryParams = {
-      query: req.query.query || '',
-      limit: parseInt(req.query.limit) || 10,
-      offset: parseInt(req.query.offset) || 0,
-      sort_by: req.query.sort_by || 'created_at',
-      sort_order: req.query.sort_order || 'desc'
+      query: typeof req.query.query === 'string' ? req.query.query : '',
+      limit: parseInt(String(req.query.limit)) || 10,
+      offset: parseInt(String(req.query.offset)) || 0,
+      sort_by: typeof req.query.sort_by === 'string' ? req.query.sort_by : 'created_at',
+      sort_order: typeof req.query.sort_order === 'string' ? req.query.sort_order : 'desc'
     };
 
     // Validate using Zod schema
@@ -846,7 +860,9 @@ app.post('/api/content/:content_id/likes', authenticateToken, async (req, res) =
 */
 app.get('/api/notifications', authenticateToken, async (req, res) => {
   try {
-    const { user_id, limit = 10, offset = 0 } = req.query;
+     const { user_id } = req.query as { user_id?: string; limit?: string | number; offset?: string | number };
+     const limit = parseInt(String((req.query as any).limit ?? 10));
+     const offset = parseInt(String((req.query as any).offset ?? 0));
 
     if (!user_id) {
       return res.status(400).json(createErrorResponse('user_id query parameter is required', null, 'MISSING_REQUIRED_PARAMETER'));
@@ -861,7 +877,7 @@ app.get('/api/notifications', authenticateToken, async (req, res) => {
         WHERE user_id = $1
         ORDER BY created_at DESC
         LIMIT $2 OFFSET $3
-      `, [user_id, parseInt(limit), parseInt(offset)]);
+       `, [user_id as string, limit, offset]);
 
       res.json(result.rows);
     } finally {
@@ -879,7 +895,7 @@ app.get('/api/notifications', authenticateToken, async (req, res) => {
 */
 app.get('/api/user-settings', authenticateToken, async (req, res) => {
   try {
-    const { user_id } = req.query;
+    const { user_id } = req.query as { user_id?: string };
 
     if (!user_id) {
       return res.status(400).json(createErrorResponse('user_id query parameter is required', null, 'MISSING_REQUIRED_PARAMETER'));
@@ -910,7 +926,7 @@ app.get('/api/user-settings', authenticateToken, async (req, res) => {
 */
 app.patch('/api/user-settings', authenticateToken, async (req, res) => {
   try {
-    const { user_id } = req.query;
+    const { user_id } = req.query as { user_id?: string };
 
     if (!user_id) {
       return res.status(400).json(createErrorResponse('user_id query parameter is required', null, 'MISSING_REQUIRED_PARAMETER'));
