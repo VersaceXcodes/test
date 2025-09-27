@@ -1,6 +1,5 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { useAppStore } from '@/store/main';
 
 const GV_SideNav: React.FC = () => {
   const tasks = useAppStore(state => state.task_state.tasks);

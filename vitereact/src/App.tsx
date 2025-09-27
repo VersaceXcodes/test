@@ -5,7 +5,6 @@ import { useAppStore } from '@/store/main';
 
 // Import views
 import GV_TopNav from '@/components/views/GV_TopNav.tsx';
-import GV_Sidebar from '@/components/views/GV_Sidebar.tsx';
 import GV_Footer from '@/components/views/GV_Footer.tsx';
 import UV_Landing from '@/components/views/UV_Landing.tsx';
 import UV_Login from '@/components/views/UV_Login.tsx';
