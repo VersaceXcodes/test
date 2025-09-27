@@ -1,6 +1,6 @@
 import request from 'supertest';
 import { app, pool } from './server'; // Modify the import according to the correct server setup
-import { createUserInputSchema, createContentInputSchema } from './zodschemas';
+import { createContentInputSchema } from './schema';
 import { jest } from '@jest/globals';
 
 describe('User API Integration Tests', () => {

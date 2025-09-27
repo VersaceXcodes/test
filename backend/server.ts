@@ -15,7 +15,7 @@ import {
   likeSchema, createLikeInputSchema,
   userSettingsSchema, updateUserSettingsInputSchema,
   notificationSchema, createNotificationInputSchema, searchNotificationInputSchema
-} from './schema.js';
+} from './schema';
 
 import pkg from 'pg';
 const { Pool } = pkg;
@@ -23,7 +23,15 @@ const { Pool } = pkg;
 dotenv.config();
 
 // Error response utility
-function createErrorResponse(message, error = null, errorCode = null) {
+type ErrorResponse = {
+  success: false;
+  message: string;
+  timestamp: string;
+  error_code?: string;
+  details?: { name: string; message: string; stack?: string };
+};
+
+function createErrorResponse(message: string, error: any = null, errorCode: string | null = null): ErrorResponse {
   const response = {
     success: false,
     message,
@@ -50,9 +58,9 @@ const { DATABASE_URL, PGHOST, PGDATABASE, PGUSER, PGPASSWORD, PGPORT = 5432, JWT
 
 const pool = new Pool(
   DATABASE_URL
-    ? { 
-        connectionString: DATABASE_URL, 
-        ssl: { require: true } 
+    ? {
+        connectionString: DATABASE_URL,
+        ssl: false,
       }
     : {
         host: PGHOST,
@@ -60,7 +68,7 @@ const pool = new Pool(
         user: PGUSER,
         password: PGPASSWORD,
         port: Number(PGPORT),
-        ssl: { require: true },
+        ssl: false,
       }
 );
 
