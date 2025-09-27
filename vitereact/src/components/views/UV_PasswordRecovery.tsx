@@ -30,7 +30,7 @@ const UV_PasswordRecovery: React.FC = () => {
     try {
       emailSchema.parse(email); // Validate email
       mutate(email);
-    } catch (err) {
+    } catch {
       console.error('Invalid email format');
     }
   };

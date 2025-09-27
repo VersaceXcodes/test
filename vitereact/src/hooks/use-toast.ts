@@ -12,12 +12,8 @@ type ToasterToast = ToastProps & {
 	action?: ToastActionElement;
 };
 
-const actionTypes = {
-	ADD_TOAST: "ADD_TOAST",
-	UPDATE_TOAST: "UPDATE_TOAST",
-	DISMISS_TOAST: "DISMISS_TOAST",
-	REMOVE_TOAST: "REMOVE_TOAST",
-} as const;
+// Using as a value to align with reducer actions
+// Action type string literals are used directly
 
 let count = 0;
 

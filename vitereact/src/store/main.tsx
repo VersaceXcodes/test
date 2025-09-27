@@ -107,7 +107,7 @@ export const useAppStore = create<AppState>()(
         } catch (error: any) {
           const errorMessage = error.response?.data?.message || error.message || 'Login failed';
 
-          set((state) => ({
+          set(() => ({
             authentication_state: {
               current_user: null,
               auth_token: null,
@@ -143,7 +143,7 @@ export const useAppStore = create<AppState>()(
         } catch (error: any) {
           const errorMessage = error.response?.data?.message || error.message || 'Registration failed';
 
-          set((state) => ({
+          set(() => ({
             authentication_state: {
               current_user: null,
               auth_token: null,
@@ -198,9 +198,9 @@ export const useAppStore = create<AppState>()(
       },
 
       clear_auth_error: () => {
-        set((state) => ({
+        set((s) => ({
           authentication_state: {
-            ...state.authentication_state,
+            ...s.authentication_state,
             error_message: null,
           },
         }));

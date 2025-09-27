@@ -25,7 +25,7 @@ const UV_ReportGeneration: React.FC = () => {
   };
 
   // Function to transform the API response to a CSV format for download
-  const transformResponseToCSV = (_data: any): string => {
+  const transformResponseToCSV = (data: any): string => {
     // Implementation logic for transforming data to CSV
     // ...utilize data formatting libraries or custom implementation as needed
     return '...'; // Placeholder for CSV conversion logic
