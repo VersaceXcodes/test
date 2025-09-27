@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
@@ -28,16 +28,11 @@ const GV_Sidebar: React.FC = () => {
     return response.data.content.map((content: { categories: string[] }) => content.categories).flat();
   };
 
-  const { data: fetchedCategories, isLoading: isCategoriesLoading } = useQuery({
+  const { isLoading: isCategoriesLoading } = useQuery({
     queryKey: ['categories', currentUser?.id],
     queryFn: fetchCategories,
     enabled: !!currentUser,
     staleTime: 5 * 60 * 1000,
-    onSuccess: (data) => {
-      useAppStore.setState(state => ({
-        user_preferences: { ...state.user_preferences, categories: data }
-      }));
-    }
   });
 
   if (isLoading || isCategoriesLoading) {

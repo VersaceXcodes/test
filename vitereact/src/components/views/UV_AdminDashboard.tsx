@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useAppStore } from '@/store/main';
 import axios from 'axios';
@@ -26,7 +26,9 @@ const UV_AdminDashboard: React.FC = () => {
   const isAuthenticated = useAppStore(state => state.authentication_state.authentication_status.is_authenticated);
   const currentUser = useAppStore(state => state.authentication_state.current_user);
 
-  const { data: userActivities, isLoading, isError } = useQuery(['userActivityMetrics'], fetchUserActivityMetrics, {
+  const { data: userActivities, isLoading, isError } = useQuery({
+    queryKey: ['userActivityMetrics'],
+    queryFn: fetchUserActivityMetrics,
     enabled: isAuthenticated,
     staleTime: 60000,
     refetchOnWindowFocus: false,

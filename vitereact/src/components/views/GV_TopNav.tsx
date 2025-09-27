@@ -20,22 +20,22 @@ const GV_TopNav: React.FC = () => {
     }
   };
 
-  const { data: notifications, refetch: refetchNotifications } = useQuery(
-    ['notifications', currentUser?.id],
-    async () => {
-      if (!authToken || !currentUser) return [];
-      const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000'}/api/notifications`, {
-        headers: { Authorization: `Bearer ${authToken}` },
-        params: { user_id: currentUser.id }
-      });
-      return (response.data ?? []).map((notification: any) => ({
-        id: notification.notification_id,
-        message: notification.message,
-        isRead: notification.is_read,
-      }));
-    },
-    { enabled: !!currentUser }
-  );
+const { data: notifications, refetch: refetchNotifications } = useQuery({
+  queryKey: ['notifications', currentUser?.id],
+  queryFn: async () => {
+    if (!authToken || !currentUser) return [] as { id: string; message: string; isRead: boolean }[];
+    const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000'}/api/notifications`, {
+      headers: { Authorization: `Bearer ${authToken}` },
+      params: { user_id: currentUser.id }
+    });
+    return (response.data ?? []).map((notification: any) => ({
+      id: notification.notification_id,
+      message: notification.message,
+      isRead: notification.is_read,
+    }));
+  },
+  enabled: !!currentUser,
+});
 
   return (
     <>

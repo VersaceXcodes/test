@@ -2,15 +2,18 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 
 const GV_SideNav: React.FC = () => {
-  const tasks = useAppStore(state => state.task_state.tasks);
-  const setSelectedTask = useAppStore(state => state.set_selected_task);
-  
+  // Temporary static list until tasks are in the store
+  const tasks = [
+    { task_id: '1', title: 'Sample Task A' },
+    { task_id: '2', title: 'Sample Task B' },
+  ];
+
   const navigateToCreateTask = () => {
-    window.location.href = '/tasks/create'; // Alternatively, use <Link to="/tasks/create"> for navigational elements
+    window.location.href = '/tasks/create';
   };
 
   const handleTaskSelection = (task_id: string) => {
-    setSelectedTask(task_id);
+    console.log('Selected task', task_id);
   };
 
   return (
@@ -64,7 +67,7 @@ const GV_SideNav: React.FC = () => {
           <div className="mt-auto">
             <h2 className="text-xl font-bold mb-4">Collaboration</h2>
             <button
-              onClick={() => console.log("Open collaboration room")}
+              onClick={() => console.log('Open collaboration room')}
               className="w-full text-left py-2 px-4 text-sm"
             >
               Open Collaboration Room
