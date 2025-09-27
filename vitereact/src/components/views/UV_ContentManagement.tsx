@@ -3,6 +3,7 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import { useAppStore } from '@/store/main';
 import { z } from 'zod';
+import { Link } from 'react-router-dom';
 
 // Import TypeScript types and schemas from Zod
 import { contentSchema, createContentInputSchema } from '@/zodschemas';
@@ -29,32 +30,21 @@ const UV_ContentManagement: React.FC = () => {
     tags: [] as string[],
   });
   
-  const { data: myContent, isLoading, error } = useQuery(
-    ['fetchMyContent', currentUser?.id],
-    async () => {
+  const { data: myContent, isLoading, error } = useQuery({
+    queryKey: ['fetchMyContent', currentUser?.id],
+    queryFn: async () => {
       const response = await authAxios(authToken).get(`/my-content?user_id=${currentUser?.id}`);
-      return z.array(contentSchema).parse(response.data); // Ensure type-check with Zod
+      return z.array(contentSchema).parse(response.data);
     },
-    { enabled: !!currentUser }  // Enable only if user is available
-  );
+    enabled: !!currentUser,
+  });
 
-  const createContentMutation = useMutation(
-    async (contentData: z.infer<typeof createContentInputSchema>) => {
+  const createContentMutation = useMutation({
+    mutationFn: async (contentData: z.infer<typeof createContentInputSchema>) => {
       const response = await authAxios(authToken).post('/content', contentData);
       return contentSchema.parse(response.data);
     },
-    {
-      onSuccess: () => {
-        // Refetch content on successful creation
-        queryClient.invalidateQueries(['fetchMyContent']);
-        setNewContent({ title: '', description: '', tags: [] }); // Reset form
-      },
-      onError: (error: any) => {
-        // Handle error (log or show user-visible error)
-        console.error('Error creating content', error);
-      },
-    }
-  );
+  });
 
   const handleCreateContent = (e: React.FormEvent) => {
     e.preventDefault();
@@ -71,7 +61,14 @@ const UV_ContentManagement: React.FC = () => {
       return;
     }
 
-    createContentMutation.mutate(parsedContentData.data);
+    createContentMutation.mutate(parsedContentData.data, {
+      onSuccess: () => {
+        setNewContent({ title: '', description: '', tags: [] });
+      },
+      onError: (err) => {
+        console.error('Error creating content', err);
+      },
+    });
   };
 
   return (
@@ -124,13 +121,13 @@ const UV_ContentManagement: React.FC = () => {
           </div>
           
           <div className="mt-6">
-            <button
-              type="submit"
-              className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-              disabled={createContentMutation.isLoading}
-            >
-              {createContentMutation.isLoading ? 'Creating...' : 'Create Content'}
-            </button>
+              <button
+                type="submit"
+                className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                disabled={createContentMutation.isPending}
+              >
+                {createContentMutation.isPending ? 'Creating...' : 'Create Content'}
+              </button>
           </div>
         </form>
 
@@ -141,11 +138,11 @@ const UV_ContentManagement: React.FC = () => {
           <p className="text-red-500">Error loading content. Please try again later.</p>
         ) : (
           <div>
-            {myContent?.length === 0 ? (
+            {!myContent || myContent.length === 0 ? (
               <p>No content created yet.</p>
             ) : (
               <ul className="space-y-4">
-                {myContent.map(item => (
+                {myContent!.map(item => (
                   <li key={item.content_id} className="border border-gray-200 rounded-md p-4 bg-white shadow-sm">
                     <h3 className="text-lg font-semibold">{item.title}</h3>
                     <p className="text-sm text-gray-600">{item.description}</p>

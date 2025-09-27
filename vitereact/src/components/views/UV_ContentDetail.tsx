@@ -53,26 +53,21 @@ const UV_ContentDetail: React.FC = () => {
   const { content_id } = useParams<{ content_id: string }>();
   const auth_token = useAppStore(state => state.authentication_state.auth_token);
 
-  const { data: content, error: contentError, isLoading: isContentLoading } = useQuery<Content, Error>(
-    ['content', content_id], 
-    () => fetchContentDetails(content_id!, auth_token), 
-    { enabled: !!content_id && !!auth_token }
-  );
+  const { data: content, error: contentError, isLoading: isContentLoading } = useQuery<Content, Error>({
+    queryKey: ['content', content_id],
+    queryFn: () => fetchContentDetails(content_id!, auth_token),
+    enabled: !!content_id && !!auth_token,
+  });
 
-  const { data: comments, error: commentsError, isLoading: isCommentsLoading } = useQuery<Comment[], Error>(
-    ['comments', content_id], 
-    () => fetchComments(content_id!, auth_token),
-    { enabled: !!content_id && !!auth_token }
-  );
+  const { data: comments, error: commentsError, isLoading: isCommentsLoading } = useQuery<Comment[], Error>({
+    queryKey: ['comments', content_id],
+    queryFn: () => fetchComments(content_id!, auth_token),
+    enabled: !!content_id && !!auth_token,
+  });
 
-  const { mutate: like, isLoading: isLikeLoading } = useMutation(
-    () => likeContent(content_id!, auth_token),
-    {
-      onSuccess: () => {
-        // Optionally refetch content or update local state with new like count
-      },
-    }
-  );
+  const { mutate: like, isPending: isLikeLoading } = useMutation({
+    mutationFn: () => likeContent(content_id!, auth_token),
+  });
 
   if (isContentLoading || isCommentsLoading) {
     return <div>Loading...</div>;

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useQuery, useMutation, QueryClient, QueryClientProvider } from '@tanstack/react-query'; 
 import axios from 'axios';
 import { useAppStore } from '@/store/main';
-import { UserSettings } from '@/db/zodschemas';
+import { UserSettings } from '@/zodschemas';
 import { Link } from 'react-router-dom';
 
 const queryClient = new QueryClient();
@@ -30,19 +30,18 @@ const UV_UserSettings: React.FC = () => {
 
   const [localSettings, setLocalSettings] = useState<UserSettings | null>(null);
 
-  const { data: userSettings, error, refetch } = useQuery(
-    ['userSettings', userId],
-    () => fetchUserSettings(userId, authToken!),
-    {
-      enabled: !!userId && !!authToken,
-      refetchOnWindowFocus: false,
-      staleTime: 5 * 60 * 1000,
-      onSuccess: (data) => setLocalSettings(data),
-    }
-  );
+  const { data: userSettings, error, refetch } = useQuery({
+    queryKey: ['userSettings', userId],
+    queryFn: () => fetchUserSettings(userId, authToken!),
+    enabled: !!userId && !!authToken,
+    refetchOnWindowFocus: false,
+    staleTime: 5 * 60 * 1000,
+    onSuccess: (data) => setLocalSettings(data as UserSettings),
+  });
 
-  const mutation = useMutation(updateUserSettings, {
-    onSuccess: () => refetch(),
+  const mutation = useMutation({
+    mutationFn: updateUserSettings,
+    onSuccess: () => { void refetch(); },
   });
 
   const handleCategoriesChange = (categories: string[]) => {

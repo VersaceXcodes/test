@@ -2,30 +2,28 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { useMutation } from '@tanstack/react-query';
-import { z } from 'zod';
+
 
 const UV_PasswordReset: React.FC = () => {
   const [resetEmail, setResetEmail] = useState<string>('');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
-  const mutation = useMutation(
-    async (email: string) => {
+  const mutation = useMutation({
+    mutationFn: async (email: string) => {
       const { data } = await axios.post(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000'}/api/auth/password-reset`, { email });
       return data;
     },
-    {
-      onSuccess: () => {
-        setSuccessMessage('Password reset email sent successfully.');
-        setErrorMessage(null);
-        setResetEmail('');
-      },
-      onError: (error: any) => {
-        setErrorMessage(error.response?.data?.message || 'Failed to send password reset email.');
-        setSuccessMessage(null);
-      }
+    onSuccess: () => {
+      setSuccessMessage('Password reset email sent successfully.');
+      setErrorMessage(null);
+      setResetEmail('');
+    },
+    onError: (error: any) => {
+      setErrorMessage(error.response?.data?.message || 'Failed to send password reset email.');
+      setSuccessMessage(null);
     }
-  );
+  });
 
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setResetEmail(e.target.value);

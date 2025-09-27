@@ -25,16 +25,16 @@ const UV_ReportGeneration: React.FC = () => {
   };
 
   // Function to transform the API response to a CSV format for download
-  const transformResponseToCSV = (data: any): string => {
+  const transformResponseToCSV = (_data: any): string => {
     // Implementation logic for transforming data to CSV
     // ...utilize data formatting libraries or custom implementation as needed
     return '...'; // Placeholder for CSV conversion logic
   };
 
   // Query to fetch report data based on criteria
-  const { data, isLoading, error, refetch } = useQuery(
-    ['generateReport', reportCriteria],
-    async () => {
+  const { data, isLoading, error, refetch } = useQuery({
+    queryKey: ['generateReport', reportCriteria],
+    queryFn: async () => {
       const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000'}/api/admin/reports`, {
         headers: { Authorization: `Bearer ${authToken}` },
         params: {
@@ -45,8 +45,8 @@ const UV_ReportGeneration: React.FC = () => {
       });
       return transformResponseToCSV(response.data);
     },
-    { enabled: false, retry: 1, refetchOnWindowFocus: false }
-  );
+    enabled: false, retry: 1, refetchOnWindowFocus: false,
+  });
 
   return (
     <>

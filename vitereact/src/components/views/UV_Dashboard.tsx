@@ -1,26 +1,26 @@
 import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAppStore } from '@/store/main';
-import { useQuery, QueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
-import { contentSchema, Content } from '@/store/zodschemas'; // Assuming that Content schema is exported from the zodschemas file
+import { contentSchema, Content } from '@/zodschemas';
+import { z } from 'zod';
 
-// Create a query client instance
-const queryClient = new QueryClient();
-
-const fetchDashboardContent = async (userId: string): Promise<Content[]> => {
+const fetchDashboardContent = async (userId: string, authToken: string): Promise<Content[]> => {
   const response = await axios.get(
     `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000'}/api/dashboard`,
     {
       params: { user_id: userId },
       headers: {
-        Authorization: `Bearer ${import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000'}`,
+        Authorization: `Bearer ${authToken}`,
       },
     }
   );
 
-  // Validate response using zod
-  return contentSchema.parse(response.data);
+  // Validate and coerce to array of Content
+  const data = response.data;
+  const arraySchema = z.array(contentSchema);
+  return arraySchema.parse(data);
 };
 
 const UV_Dashboard: React.FC = () => {
@@ -29,15 +29,13 @@ const UV_Dashboard: React.FC = () => {
   const authToken = useAppStore((state) => state.authentication_state.auth_token);
 
   // Perform a query with react-query
-  const { data: contentFeed, isLoading, error } = useQuery(
-    ['dashboardContent', userId],
-    () => fetchDashboardContent(userId!),
-    {
-      enabled: !!userId && !!authToken,
-      refetchOnWindowFocus: false,
-      staleTime: 5 * 60 * 1000, // 5 minutes
-    }
-  );
+  const { data: contentFeed, isLoading, error } = useQuery({
+    queryKey: ['dashboardContent', userId],
+    queryFn: () => fetchDashboardContent(userId!, authToken!),
+    enabled: !!userId && !!authToken,
+    refetchOnWindowFocus: false,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
 
   // Map content_feed into state on success
   useEffect(() => {
@@ -49,7 +47,7 @@ const UV_Dashboard: React.FC = () => {
           is_loading: false,
           error_message: null,
         },
-      }));
+      } as any));
     }
   }, [contentFeed]);
 
@@ -66,7 +64,7 @@ const UV_Dashboard: React.FC = () => {
   if (error) {
     return (
       <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md">
-        <p className="text-sm">Error loading content: {error}</p>
+         <p className="text-sm">Error loading content: {(error as Error).message}</p>
       </div>
     );
   }
@@ -110,7 +108,7 @@ const UV_Dashboard: React.FC = () => {
             ) : (
               <ul>
                 {contentFeed.map((content) => (
-                  <li key={content.id} className="mb-4 p-4 bg-white shadow rounded-md">
+                  <li key={content.content_id} className="mb-4 p-4 bg-white shadow rounded-md">
                     <h3 className="text-lg font-bold">{content.title}</h3>
                     <p className="text-sm text-gray-700">{content.description}</p>
                     <div className="text-sm text-gray-500">

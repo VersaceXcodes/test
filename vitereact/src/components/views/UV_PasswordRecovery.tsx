@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
-import { useAppStore } from '@/store/main';
+
 import { z } from 'zod';
 
 // Zod schema for email validation
@@ -14,7 +14,7 @@ interface PasswordRecoveryResponse {
 
 const UV_PasswordRecovery: React.FC = () => {
   const [email, setEmail] = useState('');
-  const { mutate, isLoading, isError, isSuccess, error } = useMutation<PasswordRecoveryResponse, Error, string>({
+  const { mutate, isPending: isLoading, isError, isSuccess } = useMutation<PasswordRecoveryResponse, Error, string>({
     mutationFn: async (email) => {
       const response = await axios.post(
         `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000'}/api/auth/password-recovery`,

@@ -36,7 +36,7 @@ const UV_AdminDashboard: React.FC = () => {
 
   return (
     <>
-      {isAuthenticated && currentUser?.role === 'Admin' ? (
+      {isAuthenticated ? (
         <div className="min-h-screen bg-gray-100">
           <nav className="bg-white shadow-md mb-4">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

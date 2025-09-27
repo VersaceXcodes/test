@@ -16,19 +16,19 @@ const UV_CreateTask: React.FC = () => {
 
   const {
     mutate: createTask,
-    isLoading,
+    isPending: isLoading,
     isError,
     error,
     isSuccess,
-  } = useMutation(
-    async () => {
+  } = useMutation({
+    mutationFn: async () => {
       const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000'}/api/tasks`, {
         title: taskTitle,
         description: taskDescription,
         due_date: dueDate || null,
         tags: tags.split(',').map(tag => tag.trim()),
         assigned_users: assignedUsers.split(',').map(user => user.trim()),
-        created_by: currentUser?.user_id,
+        created_by: currentUser?.id,
       }, {
         headers: {
           'Authorization': `Bearer ${authToken}`,
@@ -37,18 +37,14 @@ const UV_CreateTask: React.FC = () => {
       });
       return response.data;
     },
-    {
-      onSuccess: () => {
-        // Reset form states and redirect or notify user
-        setTaskTitle('');
-        setTaskDescription('');
-        setDueDate('');
-        setTags('');
-        setAssignedUsers('');
-        // Navigate or show success notification
-      },
-    }
-  );
+    onSuccess: () => {
+      setTaskTitle('');
+      setTaskDescription('');
+      setDueDate('');
+      setTags('');
+      setAssignedUsers('');
+    },
+  });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

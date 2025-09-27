@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useAppStore } from '@/store/main';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
@@ -21,11 +21,11 @@ const UV_TaskDetails: React.FC = () => {
     return response.data;
   };
 
-  const { data: taskDetails, error, isLoading } = useQuery(
-    ['taskDetails', task_id],
-    fetchTaskDetails,
-    { enabled: !!task_id && isAuthenticated }
-  );
+  const { data: taskDetails, error, isLoading } = useQuery({
+    queryKey: ['taskDetails', task_id],
+    queryFn: fetchTaskDetails,
+    enabled: !!task_id && isAuthenticated,
+  });
 
   if (isLoading) {
     return (
@@ -38,7 +38,7 @@ const UV_TaskDetails: React.FC = () => {
   if (error) {
     return (
       <div className="alert alert-error">
-        <p>Error fetching task details: {error.message}</p>
+        <p>Error fetching task details: {(error as Error).message}</p>
       </div>
     );
   }

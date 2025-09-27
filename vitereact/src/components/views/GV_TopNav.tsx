@@ -57,14 +57,14 @@ const { data: notifications, refetch: refetchNotifications } = useQuery({
             </div>
             <div className="ml-3 relative">
               <button
-                onClick={refetchNotifications}
+                onClick={() => { void refetchNotifications(); }}
                 className="bg-gray-800 flex text-sm rounded-full text-white focus:outline-none"
                 aria-label="Notifications"
               >
                 <span className="sr-only">View notifications</span>
                 {/* Notifications Icon */}
               </button>
-              {notifications?.length > 0 && (
+              {Array.isArray(notifications) && notifications.length > 0 && (
                 <div className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5">
                   <div className="py-1" role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
                     {notifications.map(notification => (
