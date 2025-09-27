@@ -24,7 +24,6 @@ const fetchUserActivityMetrics = async (): Promise<UserActivity[]> => {
 
 const UV_AdminDashboard: React.FC = () => {
   const isAuthenticated = useAppStore(state => state.authentication_state.authentication_status.is_authenticated);
-  const currentUser = useAppStore(state => state.authentication_state.current_user);
 
   const { data: userActivities, isLoading, isError } = useQuery({
     queryKey: ['userActivityMetrics'],

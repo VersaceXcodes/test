@@ -8,6 +8,7 @@ import { Link } from 'react-router-dom';
 // Import TypeScript types and schemas from Zod
 import { contentSchema, createContentInputSchema } from '@/zodschemas';
 
+
 // Ensure your API base URL is properly set in the .env file with the prefix VITE_
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api';
 

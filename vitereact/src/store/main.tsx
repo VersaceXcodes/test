@@ -79,9 +79,9 @@ export const useAppStore = create<AppState>()(
 
       // Actions
       login_user: async (email, password) => {
-        set((state) => ({
+        set((s) => ({
           authentication_state: {
-            ...state.authentication_state,
+            ...s.authentication_state,
             authentication_status: { is_authenticated: false, is_loading: true },
             error_message: null,
           },
@@ -96,7 +96,7 @@ export const useAppStore = create<AppState>()(
 
           const { user, token } = response.data;
 
-          set((state) => ({
+          set(() => ({
             authentication_state: {
               current_user: user,
               auth_token: token,
@@ -160,10 +160,10 @@ export const useAppStore = create<AppState>()(
         const token = authentication_state.auth_token;
 
         if (!token) {
-          set((state) => ({
+          set((s) => ({
             authentication_state: {
-              ...state.authentication_state,
-              authentication_status: { ...state.authentication_state.authentication_status, is_loading: false },
+              ...s.authentication_state,
+              authentication_status: { ...s.authentication_state.authentication_status, is_loading: false },
             },
           }));
           return;
@@ -177,7 +177,7 @@ export const useAppStore = create<AppState>()(
 
           const { user } = response.data;
 
-          set((state) => ({
+          set(() => ({
             authentication_state: {
               current_user: user,
               auth_token: token,
