@@ -7,9 +7,6 @@ describe('User API Integration Tests', () => {
   let authToken;
 
   beforeAll(async () => {
-    // Database setup if required
-    await pool.query('BEGIN');
-
     // Create and authenticate a user
     const userRes = await request(app)
       .post('/auth/register')
@@ -19,10 +16,7 @@ describe('User API Integration Tests', () => {
   });
 
   afterAll(async () => {
-    // Database teardown
-    await pool.query('ROLLBACK');
     jest.clearAllMocks();
-    pool.end();
   });
 
   describe('POST /auth/register', () => {

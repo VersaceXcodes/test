@@ -148,7 +148,7 @@ const authenticateToken = async (req: Request, res: Response, next: NextFunction
         return res.status(401).json(createErrorResponse('Invalid token - user not found', null, 'AUTH_USER_NOT_FOUND'));
       }
 
-      req.user = result.rows[0];
+      req.user = result.rows[0] as { user_id: string; email: string; name?: string; created_at?: string };
       next();
     } finally {
       client.release();
@@ -187,7 +187,7 @@ app.post('/api/auth/register', async (req, res) => {
         [user_id, email.toLowerCase().trim(), name.trim(), password, created_at]
       );
 
-      const user = result.rows[0];
+      const user = result.rows[0] as { user_id: string; email: string; name?: string; created_at?: string };
 
       // Create default user settings
       const user_settings_id = uuidv4();
@@ -245,7 +245,7 @@ app.post('/api/auth/login', async (req, res) => {
         return res.status(400).json(createErrorResponse('Invalid email or password', null, 'INVALID_CREDENTIALS'));
       }
 
-      const user = result.rows[0];
+      const user = result.rows[0] as { user_id: string; email: string; name?: string; created_at?: string; password_hash: string };
 
       if (password !== user.password_hash) {
         return res.status(400).json(createErrorResponse('Invalid email or password', null, 'INVALID_CREDENTIALS'));
@@ -555,7 +555,7 @@ app.put('/api/content/:content_id', authenticateToken, async (req, res) => {
         return res.status(404).json(createErrorResponse('Content not found', null, 'CONTENT_NOT_FOUND'));
       }
 
-      if (contentCheck.rows[0].creator_id !== req.user.user_id) {
+      if ((contentCheck.rows[0] as any).creator_id !== req.user.user_id) {
         return res.status(403).json(createErrorResponse('Not authorized to update this content', null, 'UNAUTHORIZED'));
       }
 
@@ -624,7 +624,7 @@ app.delete('/api/content/:content_id', authenticateToken, async (req, res) => {
         return res.status(404).json(createErrorResponse('Content not found', null, 'CONTENT_NOT_FOUND'));
       }
 
-      if (contentCheck.rows[0].creator_id !== req.user.user_id) {
+      if ((contentCheck.rows[0] as any).creator_id !== req.user.user_id) {
         return res.status(403).json(createErrorResponse('Not authorized to delete this content', null, 'UNAUTHORIZED'));
       }
 
@@ -712,7 +712,7 @@ app.post('/api/content/:content_id/comments', authenticateToken, async (req, res
 
       // Create notification for content creator
       const notification_id = uuidv4();
-      const content_creator_id = contentCheck.rows[0].creator_id;
+      const content_creator_id = (contentCheck.rows[0] as any).creator_id;
       
       if (content_creator_id !== validatedInput.user_id) {
         await client.query(
@@ -753,7 +753,7 @@ app.put('/api/comments/:comment_id', authenticateToken, async (req, res) => {
         return res.status(404).json(createErrorResponse('Comment not found', null, 'COMMENT_NOT_FOUND'));
       }
 
-      if (commentCheck.rows[0].user_id !== req.user.user_id) {
+      if ((commentCheck.rows[0] as any).user_id !== req.user.user_id) {
         return res.status(403).json(createErrorResponse('Not authorized to update this comment', null, 'UNAUTHORIZED'));
       }
 
@@ -793,7 +793,7 @@ app.delete('/api/comments/:comment_id', authenticateToken, async (req, res) => {
         return res.status(404).json(createErrorResponse('Comment not found', null, 'COMMENT_NOT_FOUND'));
       }
 
-      if (commentCheck.rows[0].user_id !== req.user.user_id) {
+      if ((commentCheck.rows[0] as any).user_id !== req.user.user_id) {
         return res.status(403).json(createErrorResponse('Not authorized to delete this comment', null, 'UNAUTHORIZED'));
       }
 
@@ -851,7 +851,7 @@ app.post('/api/content/:content_id/likes', authenticateToken, async (req, res) =
 
       // Create notification for content creator
       const notification_id = uuidv4();
-      const content_creator_id = contentCheck.rows[0].creator_id;
+      const content_creator_id = (contentCheck.rows[0] as any).creator_id;
       
       if (content_creator_id !== validatedInput.user_id) {
         await client.query(
