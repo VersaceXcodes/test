@@ -8,6 +8,8 @@ interface User {
   email: string;
   name: string;
   created_at: string;
+  is_premium?: boolean;
+  premium_expires_at?: string;
 }
 
 interface AuthenticationState {
@@ -23,6 +25,13 @@ interface AuthenticationState {
 interface UserPreferences {
   categories: string[];
   notifications_enabled: boolean;
+}
+
+interface PremiumFeatures {
+  available_models: string[];
+  current_model: string;
+  usage_limit: number;
+  usage_count: number;
 }
 
 interface Content {
@@ -44,6 +53,7 @@ interface AppState {
   authentication_state: AuthenticationState;
   user_preferences: UserPreferences;
   content_state: ContentState;
+  premium_features: PremiumFeatures;
 
   // Actions
   login_user: (email: string, password: string) => Promise<void>;
@@ -51,6 +61,8 @@ interface AppState {
   register_user: (email: string, password: string, name: string) => Promise<void>;
   initialize_auth: () => Promise<void>;
   clear_auth_error: () => void;
+  upgrade_to_premium: () => Promise<void>;
+  change_model: (model: string) => void;
 }
 
 // Store
@@ -75,6 +87,12 @@ export const useAppStore = create<AppState>()(
         content_list: [],
         is_loading: true,
         error_message: null,
+      },
+      premium_features: {
+        available_models: ['gpt-3.5-turbo'],
+        current_model: 'gpt-3.5-turbo',
+        usage_limit: 10,
+        usage_count: 0,
       },
 
       // Actions
@@ -202,6 +220,34 @@ export const useAppStore = create<AppState>()(
           authentication_state: {
             ...s.authentication_state,
             error_message: null,
+          },
+        }));
+      },
+
+      upgrade_to_premium: async () => {
+        set((s) => ({
+          authentication_state: {
+            ...s.authentication_state,
+            current_user: s.authentication_state.current_user ? {
+              ...s.authentication_state.current_user,
+              is_premium: true,
+              premium_expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(), // 30 days
+            } : null,
+          },
+          premium_features: {
+            available_models: ['gpt-3.5-turbo', 'gpt-4', 'gpt-4-turbo', 'claude-3-opus'],
+            current_model: 'gpt-4',
+            usage_limit: 1000,
+            usage_count: s.premium_features.usage_count,
+          },
+        }));
+      },
+
+      change_model: (model: string) => {
+        set((s) => ({
+          premium_features: {
+            ...s.premium_features,
+            current_model: model,
           },
         }));
       },

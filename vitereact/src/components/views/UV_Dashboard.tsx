@@ -27,6 +27,10 @@ const UV_Dashboard: React.FC = () => {
   // Access global store state and actions individually
   const userId = useAppStore((state) => state.authentication_state.current_user?.id);
   const authToken = useAppStore((state) => state.authentication_state.auth_token);
+  const currentUser = useAppStore((state) => state.authentication_state.current_user);
+  const premiumFeatures = useAppStore((state) => state.premium_features);
+  const upgradeToPromium = useAppStore((state) => state.upgrade_to_premium);
+  const changeModel = useAppStore((state) => state.change_model);
 
   // Perform a query with react-query
   const { data: contentFeed, isLoading, error } = useQuery({
@@ -102,6 +106,109 @@ const UV_Dashboard: React.FC = () => {
             <h2 className="text-2xl font-bold text-gray-900 mb-4">
               Welcome to your dashboard!
             </h2>
+
+            {/* Premium Model Section */}
+            <div className="mb-8 bg-white shadow rounded-lg p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold text-gray-900">AI Model</h3>
+                {currentUser?.is_premium ? (
+                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                    Premium
+                  </span>
+                ) : (
+                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                    Free
+                  </span>
+                )}
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label htmlFor="model-select" className="block text-sm font-medium text-gray-700 mb-2">
+                    Current Model
+                  </label>
+                  <select
+                    id="model-select"
+                    value={premiumFeatures.current_model}
+                    onChange={(e) => changeModel(e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                    disabled={!currentUser?.is_premium && premiumFeatures.available_models.length > 1}
+                  >
+                    {premiumFeatures.available_models.map((model) => (
+                      <option key={model} value={model}>
+                        {model}
+                      </option>
+                    ))}
+                  </select>
+                  {!currentUser?.is_premium && (
+                    <p className="mt-1 text-sm text-gray-500">
+                      Upgrade to premium to access advanced models
+                    </p>
+                  )}
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Usage This Month
+                  </label>
+                  <div className="relative">
+                    <div className="w-full bg-gray-200 rounded-full h-2">
+                      <div 
+                        className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                        style={{ 
+                          width: `${Math.min((premiumFeatures.usage_count / premiumFeatures.usage_limit) * 100, 100)}%` 
+                        }}
+                      ></div>
+                    </div>
+                    <p className="mt-1 text-sm text-gray-600">
+                      {premiumFeatures.usage_count} / {premiumFeatures.usage_limit} requests
+                    </p>
+                  </div>
+                </div>
+              </div>
+              
+              {!currentUser?.is_premium && (
+                <div className="mt-6 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-200">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h4 className="text-sm font-semibold text-gray-900">Upgrade to Premium</h4>
+                      <p className="text-sm text-gray-600 mt-1">
+                        Access GPT-4, Claude, and other advanced AI models
+                      </p>
+                      <ul className="mt-2 text-sm text-gray-500">
+                        <li>• 1000 monthly requests</li>
+                        <li>• Access to latest models</li>
+                        <li>• Priority support</li>
+                      </ul>
+                    </div>
+                    <button
+                      onClick={upgradeToPromium}
+                      className="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 transition-colors whitespace-nowrap"
+                    >
+                      Upgrade Now
+                    </button>
+                  </div>
+                </div>
+              )}
+              
+              {currentUser?.is_premium && (
+                <div className="mt-6 p-4 bg-gradient-to-r from-yellow-50 to-orange-50 rounded-lg border border-yellow-200">
+                  <div className="flex items-center">
+                    <div className="flex-shrink-0">
+                      <svg className="h-5 w-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                      </svg>
+                    </div>
+                    <div className="ml-3">
+                      <p className="text-sm font-medium text-gray-900">Premium Active</p>
+                      <p className="text-sm text-gray-600">
+                        Your premium subscription expires on {currentUser.premium_expires_at ? new Date(currentUser.premium_expires_at).toLocaleDateString() : 'N/A'}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
 
             {!contentFeed || contentFeed.length === 0 ? (
               <p className="text-gray-600">No content available</p>
