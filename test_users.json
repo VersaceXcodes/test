@@ -1,0 +1,133 @@
+{
+  "generated_at": "2025-10-04T00:00:00Z",
+  "user_structure": {
+    "table_name": "users (in-memory storage)",
+    "role_field": "N/A - no roles implemented",
+    "registration_endpoint": "/api/auth/register",
+    "login_endpoint": "/api/auth/login",
+    "profile_endpoint": "/api/user/profile"
+  },
+  "total_users": 3,
+  "verified_users": 3,
+  "users": [
+    {
+      "email": "admin@test.com",
+      "password": "AdminPass123!",
+      "name": "Admin User",
+      "role": "user",
+      "verified": true,
+      "token": null,
+      "description": "Primary test user with admin naming"
+    },
+    {
+      "email": "user@test.com",
+      "password": "UserPass123!",
+      "name": "Regular User",
+      "role": "user",
+      "verified": true,
+      "token": null,
+      "description": "Standard test user"
+    },
+    {
+      "email": "testuser@example.com",
+      "password": "Test1234!",
+      "name": "Test User",
+      "role": "user",
+      "verified": true,
+      "token": null,
+      "description": "Alternative test user account"
+    }
+  ],
+  "by_role": {
+    "user": [
+      {
+        "email": "admin@test.com",
+        "password": "AdminPass123!",
+        "name": "Admin User",
+        "verified": true
+      },
+      {
+        "email": "user@test.com",
+        "password": "UserPass123!",
+        "name": "Regular User",
+        "verified": true
+      },
+      {
+        "email": "testuser@example.com",
+        "password": "Test1234!",
+        "name": "Test User",
+        "verified": true
+      }
+    ]
+  },
+  "notes": [
+    "Backend uses in-memory storage - users are NOT persisted between restarts",
+    "No database schema file found - all data stored in memory",
+    "No role-based access control implemented - all users have the same permissions",
+    "Users must be created via the registration endpoint before login",
+    "JWT tokens expire after 24 hours",
+    "Passwords are hashed using bcryptjs with 10 salt rounds"
+  ],
+  "api_endpoints": {
+    "health": {
+      "method": "GET",
+      "url": "/health",
+      "description": "Health check endpoint"
+    },
+    "register": {
+      "method": "POST",
+      "url": "/api/auth/register",
+      "body": {
+        "email": "string (required)",
+        "password": "string (required)",
+        "name": "string (optional)"
+      },
+      "returns": {
+        "message": "string",
+        "user": {
+          "id": "number",
+          "email": "string",
+          "name": "string"
+        },
+        "token": "string (JWT)"
+      }
+    },
+    "login": {
+      "method": "POST",
+      "url": "/api/auth/login",
+      "body": {
+        "email": "string (required)",
+        "password": "string (required)"
+      },
+      "returns": {
+        "message": "string",
+        "user": {
+          "id": "number",
+          "email": "string",
+          "name": "string"
+        },
+        "token": "string (JWT)"
+      }
+    },
+    "profile": {
+      "method": "GET",
+      "url": "/api/user/profile",
+      "headers": {
+        "Authorization": "Bearer {token}"
+      },
+      "returns": {
+        "user": {
+          "id": "number",
+          "email": "string",
+          "name": "string"
+        }
+      }
+    }
+  },
+  "test_instructions": {
+    "registration": "Users must be created via /api/auth/register before they can log in",
+    "login": "Use the email and password from the users array above",
+    "authentication": "JWT token is returned on successful registration/login and stored in localStorage",
+    "logout": "Clears localStorage and resets authentication state in Zustand store"
+  }
+}

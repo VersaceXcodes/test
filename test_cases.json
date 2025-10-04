@@ -1,0 +1,503 @@
+{
+  "generated_at": "2025-10-04T00:00:00Z",
+  "application_name": "Auth E2E Test Application",
+  "base_urls": {
+    "frontend": "https://123test.launchpulse.ai",
+    "backend": "https://123test-api.launchpulse.ai"
+  },
+  "total_test_cases": 25,
+  "categories": [
+    "functionality",
+    "authentication",
+    "interface",
+    "navigation",
+    "error_handling",
+    "security",
+    "performance"
+  ],
+  "testCases": [
+    {
+      "id": "functional-app-test",
+      "name": "Functional Application Test",
+      "category": "functionality",
+      "priority": "critical",
+      "description": "Verify the application has actual functionality beyond basic placeholder",
+      "preconditions": "Application is deployed and accessible",
+      "steps": [
+        "Navigate to https://123test.launchpulse.ai",
+        "Verify page loads successfully",
+        "Check for multiple interactive elements (buttons, forms, links)",
+        "Verify proper navigation structure exists",
+        "Confirm application has real features, not just 'Vite + React' placeholder text",
+        "Validate login form is visible with email and password fields"
+      ],
+      "expectedOutcome": "Application shows functional authentication features with login/register forms and interactive UI components",
+      "failureCondition": "If page only shows 'Vite + React' placeholder or generic template, this test should FAIL"
+    },
+    {
+      "id": "ui-components-test",
+      "name": "UI Components Test",
+      "category": "interface",
+      "priority": "high",
+      "description": "Test that UI components are properly implemented and interactive",
+      "preconditions": "User is on the landing page",
+      "steps": [
+        "Navigate to application root",
+        "Identify and count interactive buttons",
+        "Locate form fields (email, password, name)",
+        "Verify labels are associated with inputs",
+        "Check for toggle between login/register modes",
+        "Test button states (enabled/disabled)",
+        "Verify responsive design elements"
+      ],
+      "expectedOutcome": "Multiple interactive UI components found including forms, buttons, and input fields with proper labels and states"
+    },
+    {
+      "id": "content-quality-test",
+      "name": "Content Quality Test",
+      "category": "interface",
+      "priority": "high",
+      "description": "Verify application has meaningful content and professional appearance",
+      "preconditions": "Application is loaded",
+      "steps": [
+        "Check page has substantial content beyond placeholder",
+        "Verify proper heading structure (h1 for 'Sign In' or 'Create Account')",
+        "Look for actual authentication features",
+        "Ensure professional appearance with proper styling",
+        "Validate form elements have proper spacing and layout"
+      ],
+      "expectedOutcome": "Application demonstrates real authentication functionality with professional design and clear content structure"
+    },
+    {
+      "id": "user-registration-success",
+      "name": "User Registration - Success Flow",
+      "category": "authentication",
+      "priority": "critical",
+      "description": "Verify successful user registration with valid credentials",
+      "preconditions": "Backend server is running and user does not exist",
+      "steps": [
+        "Navigate to https://123test.launchpulse.ai",
+        "Click 'Need an account? Sign Up' button to switch to register mode",
+        "Verify form shows 'Create Account' heading",
+        "Enter name: 'Test User'",
+        "Enter email: 'newuser@test.com'",
+        "Enter password: 'TestPass123!'",
+        "Click 'Create Account' button",
+        "Wait for API response",
+        "Verify redirect to /dashboard",
+        "Verify user name is displayed on dashboard"
+      ],
+      "expectedOutcome": "User is successfully registered, JWT token is stored in localStorage, and user is redirected to dashboard showing welcome message",
+      "postconditions": "User account exists in memory, JWT token in localStorage"
+    },
+    {
+      "id": "user-registration-duplicate",
+      "name": "User Registration - Duplicate Email",
+      "category": "authentication",
+      "priority": "high",
+      "description": "Verify system prevents duplicate email registration",
+      "preconditions": "User with email already exists",
+      "steps": [
+        "Navigate to registration form",
+        "Switch to register mode",
+        "Enter name: 'Duplicate User'",
+        "Enter email: 'admin@test.com' (existing user)",
+        "Enter password: 'TestPass123!'",
+        "Click 'Create Account' button",
+        "Verify error message is displayed"
+      ],
+      "expectedOutcome": "Error message 'User already exists' is displayed in red error box",
+      "postconditions": "No new user created, original user data unchanged"
+    },
+    {
+      "id": "user-registration-validation",
+      "name": "User Registration - Field Validation",
+      "category": "authentication",
+      "priority": "medium",
+      "description": "Verify form validation for required fields",
+      "preconditions": "On registration form",
+      "steps": [
+        "Navigate to registration form",
+        "Leave email field empty",
+        "Leave password field empty",
+        "Verify submit button is disabled",
+        "Enter only email",
+        "Verify button still disabled",
+        "Enter password",
+        "Verify button becomes enabled"
+      ],
+      "expectedOutcome": "Submit button is disabled when required fields are empty and enabled when both email and password are provided"
+    },
+    {
+      "id": "user-login-success",
+      "name": "User Login - Success Flow",
+      "category": "authentication",
+      "priority": "critical",
+      "description": "Verify successful login with valid credentials",
+      "preconditions": "User account exists (admin@test.com / AdminPass123!)",
+      "steps": [
+        "Navigate to https://123test.launchpulse.ai",
+        "Verify 'Sign In' form is displayed",
+        "Enter email: 'admin@test.com'",
+        "Enter password: 'AdminPass123!'",
+        "Click 'Sign In' button",
+        "Wait for authentication",
+        "Verify redirect to /dashboard",
+        "Verify welcome message with user name/email"
+      ],
+      "expectedOutcome": "User successfully logs in, JWT token stored in localStorage, redirected to dashboard with personalized greeting",
+      "postconditions": "User session active, auth_token in localStorage"
+    },
+    {
+      "id": "user-login-invalid-credentials",
+      "name": "User Login - Invalid Credentials",
+      "category": "authentication",
+      "priority": "high",
+      "description": "Verify system handles invalid login credentials",
+      "preconditions": "On login page",
+      "steps": [
+        "Navigate to login form",
+        "Enter email: 'nonexistent@test.com'",
+        "Enter password: 'WrongPassword123!'",
+        "Click 'Sign In' button",
+        "Verify error message is displayed"
+      ],
+      "expectedOutcome": "Error message 'Invalid credentials' is displayed without exposing whether email or password was incorrect",
+      "postconditions": "User remains on login page, no token stored"
+    },
+    {
+      "id": "user-login-empty-fields",
+      "name": "User Login - Empty Fields Validation",
+      "category": "authentication",
+      "priority": "medium",
+      "description": "Verify login form validates empty fields",
+      "preconditions": "On login page",
+      "steps": [
+        "Navigate to login form",
+        "Leave both email and password empty",
+        "Verify 'Sign In' button is disabled",
+        "Enter email only",
+        "Verify button still disabled",
+        "Clear email and enter password only",
+        "Verify button still disabled"
+      ],
+      "expectedOutcome": "Submit button remains disabled until both email and password are provided"
+    },
+    {
+      "id": "user-logout",
+      "name": "User Logout Flow",
+      "category": "authentication",
+      "priority": "high",
+      "description": "Verify user can successfully logout",
+      "preconditions": "User is logged in and on dashboard",
+      "steps": [
+        "Login with valid credentials",
+        "Navigate to /dashboard",
+        "Verify logout button is visible",
+        "Click 'Logout' button",
+        "Verify localStorage is cleared (auth_token removed)",
+        "Verify redirect to login page",
+        "Attempt to navigate back to /dashboard",
+        "Verify authentication state is cleared"
+      ],
+      "expectedOutcome": "User successfully logs out, token removed from localStorage, redirected to login, cannot access dashboard without re-authenticating"
+    },
+    {
+      "id": "toggle-login-register",
+      "name": "Toggle Between Login and Register Modes",
+      "category": "interface",
+      "priority": "medium",
+      "description": "Verify user can switch between login and registration forms",
+      "preconditions": "On landing page",
+      "steps": [
+        "Navigate to application",
+        "Verify 'Sign In' heading is displayed",
+        "Click 'Need an account? Sign Up' link",
+        "Verify heading changes to 'Create Account'",
+        "Verify name field appears",
+        "Verify button text changes to 'Create Account'",
+        "Click 'Already have an account? Sign In' link",
+        "Verify heading returns to 'Sign In'",
+        "Verify name field is hidden",
+        "Verify form fields are cleared"
+      ],
+      "expectedOutcome": "User can seamlessly toggle between login and registration modes with proper UI updates and field clearing"
+    },
+    {
+      "id": "navigation-routes",
+      "name": "Application Navigation Routes",
+      "category": "navigation",
+      "priority": "medium",
+      "description": "Verify all application routes work correctly",
+      "preconditions": "Application is accessible",
+      "steps": [
+        "Navigate to / (root)",
+        "Verify login form is displayed",
+        "Navigate to /login",
+        "Verify same login form is displayed",
+        "Login with valid credentials",
+        "Navigate to /dashboard",
+        "Verify dashboard with user info is displayed",
+        "Manually navigate to /nonexistent-route",
+        "Verify appropriate handling (redirects or 404)"
+      ],
+      "expectedOutcome": "All defined routes (/, /login, /dashboard) work correctly and display appropriate content"
+    },
+    {
+      "id": "dashboard-protected-route",
+      "name": "Dashboard Protected Route Access",
+      "category": "security",
+      "priority": "high",
+      "description": "Verify dashboard requires authentication",
+      "preconditions": "User is not logged in",
+      "steps": [
+        "Clear localStorage",
+        "Navigate directly to /dashboard URL",
+        "Verify behavior (should either redirect to login or show login prompt)",
+        "Note: Current implementation may allow access (client-side only protection)"
+      ],
+      "expectedOutcome": "Dashboard should be protected, though current implementation uses client-side routing without server-side guards",
+      "notes": "This is a known limitation - client-side protection only"
+    },
+    {
+      "id": "persistent-session",
+      "name": "Persistent Session After Page Refresh",
+      "category": "authentication",
+      "priority": "high",
+      "description": "Verify user session persists after page refresh",
+      "preconditions": "User is logged in",
+      "steps": [
+        "Login with valid credentials",
+        "Verify JWT token exists in localStorage",
+        "Note the token value",
+        "Refresh the page (F5 or browser refresh)",
+        "Verify token still exists in localStorage",
+        "Check if user remains on dashboard or requires re-login"
+      ],
+      "expectedOutcome": "JWT token persists in localStorage after refresh",
+      "notes": "Current implementation stores token but may not automatically restore session state"
+    },
+    {
+      "id": "loading-states",
+      "name": "Loading States During Authentication",
+      "category": "interface",
+      "priority": "medium",
+      "description": "Verify proper loading states during login/registration",
+      "preconditions": "On login or registration form",
+      "steps": [
+        "Enter valid credentials",
+        "Click submit button",
+        "Verify button shows 'Loading...' text",
+        "Verify button is disabled during loading",
+        "Verify button background color changes to gray",
+        "Wait for API response",
+        "Verify loading state clears after response"
+      ],
+      "expectedOutcome": "Button shows loading state with proper text, disabled state, and visual feedback during API calls"
+    },
+    {
+      "id": "error-message-display",
+      "name": "Error Message Display",
+      "category": "error_handling",
+      "priority": "medium",
+      "description": "Verify error messages are displayed correctly",
+      "preconditions": "On authentication page",
+      "steps": [
+        "Attempt login with invalid credentials",
+        "Verify error message appears in red box",
+        "Verify error text is readable",
+        "Note error message styling (red background #f8d7da, dark red text #721c24)",
+        "Submit another invalid request",
+        "Verify previous error is replaced with new error"
+      ],
+      "expectedOutcome": "Error messages display clearly with proper styling and are updated for each new error"
+    },
+    {
+      "id": "api-health-check",
+      "name": "Backend Health Check Endpoint",
+      "category": "functionality",
+      "priority": "medium",
+      "description": "Verify backend health endpoint is accessible",
+      "preconditions": "Backend server is running",
+      "steps": [
+        "Make GET request to https://123test-api.launchpulse.ai/health",
+        "Verify response status is 200",
+        "Verify response contains 'status': 'OK'",
+        "Verify response contains timestamp in ISO format"
+      ],
+      "expectedOutcome": "Health endpoint returns 200 status with proper JSON response including status and timestamp"
+    },
+    {
+      "id": "api-registration-endpoint",
+      "name": "Backend Registration API Test",
+      "category": "functionality",
+      "priority": "high",
+      "description": "Directly test registration API endpoint",
+      "preconditions": "Backend server is running",
+      "steps": [
+        "Make POST request to /api/auth/register",
+        "Send JSON body: {email: 'apitest@test.com', password: 'TestPass123!', name: 'API Test'}",
+        "Verify response status is 201",
+        "Verify response contains user object with id, email, name",
+        "Verify response contains JWT token",
+        "Verify token is valid JWT format"
+      ],
+      "expectedOutcome": "Registration endpoint returns 201 status with user object and valid JWT token"
+    },
+    {
+      "id": "api-login-endpoint",
+      "name": "Backend Login API Test",
+      "category": "functionality",
+      "priority": "high",
+      "description": "Directly test login API endpoint",
+      "preconditions": "User account exists",
+      "steps": [
+        "Make POST request to /api/auth/login",
+        "Send JSON body: {email: 'admin@test.com', password: 'AdminPass123!'}",
+        "Verify response status is 200",
+        "Verify response contains user object",
+        "Verify response contains JWT token",
+        "Verify token format is valid"
+      ],
+      "expectedOutcome": "Login endpoint returns 200 status with user object and JWT token"
+    },
+    {
+      "id": "api-profile-protected",
+      "name": "Protected Profile Endpoint Test",
+      "category": "security",
+      "priority": "high",
+      "description": "Test JWT authentication on protected endpoint",
+      "preconditions": "User is registered and has valid token",
+      "steps": [
+        "Login to get valid JWT token",
+        "Make GET request to /api/user/profile",
+        "Include Authorization header: 'Bearer {token}'",
+        "Verify response status is 200",
+        "Verify user data is returned",
+        "Make same request WITHOUT token",
+        "Verify response status is 401",
+        "Make request with invalid token",
+        "Verify response status is 401"
+      ],
+      "expectedOutcome": "Profile endpoint requires valid JWT token and returns 401 for unauthorized requests"
+    },
+    {
+      "id": "password-security",
+      "name": "Password Hashing Verification",
+      "category": "security",
+      "priority": "high",
+      "description": "Verify passwords are properly hashed",
+      "preconditions": "Backend code accessible",
+      "steps": [
+        "Register a new user with password 'Test123!'",
+        "Verify backend stores hashed password (not plain text)",
+        "Verify bcryptjs is used with appropriate salt rounds (10)",
+        "Attempt to login with correct password",
+        "Verify bcrypt.compare is used for verification",
+        "Attempt login with incorrect password",
+        "Verify comparison fails correctly"
+      ],
+      "expectedOutcome": "Passwords are hashed with bcryptjs before storage and compared securely during login"
+    },
+    {
+      "id": "jwt-token-expiration",
+      "name": "JWT Token Expiration Test",
+      "category": "security",
+      "priority": "medium",
+      "description": "Verify JWT tokens have proper expiration",
+      "preconditions": "Backend generates JWT tokens",
+      "steps": [
+        "Login and receive JWT token",
+        "Decode token (without verification) to check payload",
+        "Verify token contains 'exp' claim",
+        "Verify expiration is set to 24 hours from issuance",
+        "Verify token contains user id and email in payload"
+      ],
+      "expectedOutcome": "JWT tokens are generated with 24-hour expiration and contain proper user claims"
+    },
+    {
+      "id": "cors-configuration",
+      "name": "CORS Configuration Test",
+      "category": "security",
+      "priority": "medium",
+      "description": "Verify CORS is properly configured for frontend",
+      "preconditions": "Frontend and backend on different origins",
+      "steps": [
+        "Make API request from frontend to backend",
+        "Verify request succeeds without CORS errors",
+        "Check response headers for Access-Control-Allow-Origin",
+        "Verify preflight OPTIONS requests are handled",
+        "Test with credentials if needed"
+      ],
+      "expectedOutcome": "CORS is configured to allow frontend origin (https://123test.launchpulse.ai) to access backend API"
+    },
+    {
+      "id": "form-accessibility",
+      "name": "Form Accessibility Test",
+      "category": "interface",
+      "priority": "medium",
+      "description": "Verify forms are accessible with proper labels and ARIA attributes",
+      "preconditions": "On login/registration page",
+      "steps": [
+        "Inspect form fields",
+        "Verify each input has associated label with 'for' attribute",
+        "Verify labels have 'htmlFor' matching input IDs",
+        "Check form can be navigated with keyboard (Tab key)",
+        "Verify form can be submitted with Enter key",
+        "Test with screen reader if available"
+      ],
+      "expectedOutcome": "Forms have proper label associations and are keyboard navigable for accessibility"
+    },
+    {
+      "id": "responsive-design",
+      "name": "Responsive Design Test",
+      "category": "interface",
+      "priority": "low",
+      "description": "Verify application is responsive on different screen sizes",
+      "preconditions": "Application loaded",
+      "steps": [
+        "Test on desktop viewport (1920x1080)",
+        "Verify form is centered with max-width: 400px",
+        "Test on tablet viewport (768x1024)",
+        "Verify layout remains usable",
+        "Test on mobile viewport (375x667)",
+        "Verify form fields are accessible and not cut off",
+        "Verify buttons are easily tappable"
+      ],
+      "expectedOutcome": "Application layout adapts properly to different screen sizes with form remaining usable and centered"
+    }
+  ],
+  "test_data": {
+    "valid_users": [
+      {
+        "email": "admin@test.com",
+        "password": "AdminPass123!",
+        "name": "Admin User"
+      },
+      {
+        "email": "user@test.com",
+        "password": "UserPass123!",
+        "name": "Regular User"
+      }
+    ],
+    "invalid_credentials": [
+      {
+        "email": "nonexistent@test.com",
+        "password": "WrongPass123!"
+      },
+      {
+        "email": "invalid-email",
+        "password": "Test123!"
+      }
+    ]
+  },
+  "test_notes": [
+    "Backend uses in-memory storage - users reset on server restart",
+    "No database persistence - each test run may need to register users first",
+    "JWT tokens expire after 24 hours",
+    "Client-side routing only - no server-side route protection implemented",
+    "CORS is enabled for cross-origin requests",
+    "No rate limiting or brute force protection in place",
+    "Application has functional authentication but limited features beyond login/logout"
+  ]
+}

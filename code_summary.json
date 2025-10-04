@@ -1,0 +1,332 @@
+{
+  "project_name": "Auth E2E Test Application",
+  "description": "Full-stack authentication application with React frontend and Express backend",
+  "tech_stack": [
+    "React 18.2.0",
+    "TypeScript 5.0.2",
+    "Vite 4.4.5",
+    "React Router DOM 6.11.2",
+    "Zustand 4.3.8 (State Management)",
+    "Express 4.18.2",
+    "Node.js",
+    "JWT (jsonwebtoken 9.0.0)",
+    "bcryptjs 2.4.3",
+    "Radix UI (Component Library)",
+    "Tailwind CSS 3.3.2",
+    "Vitest 0.34.1 (Testing)",
+    "Morgan (Logging)",
+    "CORS"
+  ],
+  "architecture": {
+    "frontend": {
+      "framework": "React + Vite",
+      "routing": "React Router DOM",
+      "state_management": "Zustand",
+      "styling": "Tailwind CSS + Radix UI Components",
+      "testing": "Vitest + @testing-library/react"
+    },
+    "backend": {
+      "framework": "Express",
+      "authentication": "JWT with bcryptjs password hashing",
+      "storage": "In-memory (array-based, non-persistent)",
+      "middleware": "CORS, Morgan (logging), express.json()"
+    }
+  },
+  "features": [
+    {
+      "name": "User Registration",
+      "description": "Create new user accounts with email, password, and optional name",
+      "files": [
+        "vitereact/src/App.tsx:5-114",
+        "vitereact/src/store/main.ts:39-95",
+        "backend/server.ts:34-77"
+      ],
+      "endpoints": ["POST /api/auth/register"],
+      "functionality": [
+        "Form validation for email and password",
+        "Password hashing with bcryptjs (10 rounds)",
+        "Duplicate email detection",
+        "JWT token generation",
+        "Automatic login after registration",
+        "LocalStorage token persistence"
+      ]
+    },
+    {
+      "name": "User Login",
+      "description": "Authenticate existing users with email and password",
+      "files": [
+        "vitereact/src/App.tsx:5-114",
+        "vitereact/src/store/main.ts:97-153",
+        "backend/server.ts:80-116"
+      ],
+      "endpoints": ["POST /api/auth/login"],
+      "functionality": [
+        "Email and password validation",
+        "Secure password comparison",
+        "JWT token generation with 24h expiration",
+        "User session management",
+        "Error handling for invalid credentials"
+      ]
+    },
+    {
+      "name": "User Logout",
+      "description": "Clear user session and authentication state",
+      "files": [
+        "vitereact/src/App.tsx:116-129",
+        "vitereact/src/store/main.ts:155-169"
+      ],
+      "functionality": [
+        "Clear JWT token from localStorage",
+        "Reset Zustand authentication state",
+        "Redirect to login page"
+      ]
+    },
+    {
+      "name": "Protected Dashboard",
+      "description": "User dashboard accessible only after authentication",
+      "files": [
+        "vitereact/src/App.tsx:116-129"
+      ],
+      "functionality": [
+        "Display user name or email",
+        "Logout button",
+        "Protected route (client-side)"
+      ]
+    },
+    {
+      "name": "User Profile",
+      "description": "Fetch authenticated user profile data",
+      "files": [
+        "backend/server.ts:119-141"
+      ],
+      "endpoints": ["GET /api/user/profile"],
+      "functionality": [
+        "JWT token verification",
+        "Bearer token authentication",
+        "User data retrieval"
+      ]
+    },
+    {
+      "name": "Health Check",
+      "description": "API health monitoring endpoint",
+      "files": [
+        "backend/server.ts:29-31"
+      ],
+      "endpoints": ["GET /health"],
+      "functionality": [
+        "Server status verification",
+        "Timestamp reporting"
+      ]
+    }
+  ],
+  "database_tables": [
+    {
+      "name": "users (in-memory)",
+      "description": "User storage using in-memory array (non-persistent)",
+      "fields": [
+        {
+          "name": "id",
+          "type": "number",
+          "description": "Auto-incrementing user ID"
+        },
+        {
+          "name": "email",
+          "type": "string",
+          "required": true,
+          "unique": true,
+          "description": "User email address"
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": false,
+          "description": "Optional user full name"
+        },
+        {
+          "name": "password",
+          "type": "string",
+          "required": true,
+          "description": "Bcrypt hashed password"
+        }
+      ],
+      "notes": "No database file - data resets on server restart"
+    }
+  ],
+  "api_endpoints": [
+    {
+      "method": "GET",
+      "path": "/health",
+      "description": "Health check endpoint",
+      "authentication": "None",
+      "request": null,
+      "response": {
+        "status": "string",
+        "timestamp": "ISO 8601 date string"
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/auth/register",
+      "description": "Register new user account",
+      "authentication": "None",
+      "request": {
+        "email": "string (required)",
+        "password": "string (required)",
+        "name": "string (optional)"
+      },
+      "response": {
+        "message": "string",
+        "user": {
+          "id": "number",
+          "email": "string",
+          "name": "string"
+        },
+        "token": "string (JWT)"
+      },
+      "errors": [
+        "400: Email and password are required",
+        "400: User already exists",
+        "500: Internal server error"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/auth/login",
+      "description": "Authenticate existing user",
+      "authentication": "None",
+      "request": {
+        "email": "string (required)",
+        "password": "string (required)"
+      },
+      "response": {
+        "message": "string",
+        "user": {
+          "id": "number",
+          "email": "string",
+          "name": "string"
+        },
+        "token": "string (JWT)"
+      },
+      "errors": [
+        "400: Email and password are required",
+        "401: Invalid credentials",
+        "500: Internal server error"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/user/profile",
+      "description": "Get authenticated user profile",
+      "authentication": "Bearer token (JWT)",
+      "request": null,
+      "response": {
+        "user": {
+          "id": "number",
+          "email": "string",
+          "name": "string"
+        }
+      },
+      "errors": [
+        "401: No token provided",
+        "401: Invalid token",
+        "404: User not found"
+      ]
+    }
+  ],
+  "project_structure": {
+    "frontend": {
+      "path": "vitereact/",
+      "entry_point": "src/main.tsx",
+      "main_app": "src/App.tsx",
+      "state_management": "src/store/main.ts",
+      "tests": "src/__tests__/",
+      "config_files": [
+        "vite.config.ts",
+        "tsconfig.json",
+        "tailwind.config",
+        ".eslintrc.cjs"
+      ]
+    },
+    "backend": {
+      "path": "backend/",
+      "entry_point": "server.ts",
+      "main_file": "server.ts",
+      "config_files": [
+        "tsconfig.json",
+        "package.json"
+      ]
+    }
+  },
+  "environment_variables": {
+    "frontend": {
+      "VITE_API_BASE_URL": "https://123test-api.launchpulse.ai"
+    },
+    "backend": {
+      "PORT": "3000 (default)",
+      "JWT_SECRET": "test-secret-key (default)",
+      "FRONTEND_URL": "https://123test.launchpulse.ai",
+      "BACKEND_URL": "https://123test-api.launchpulse.ai",
+      "API_BASE_URL": "https://123test-api.launchpulse.ai",
+      "ALLOWED_ORIGINS": "https://123test.launchpulse.ai"
+    }
+  },
+  "deployment_urls": {
+    "frontend": "https://123test.launchpulse.ai",
+    "backend": "https://123test-api.launchpulse.ai"
+  },
+  "scripts": {
+    "frontend": {
+      "dev": "Start Vite dev server",
+      "build": "TypeScript compilation + Vite build",
+      "lint": "ESLint with TypeScript",
+      "preview": "Preview production build",
+      "test": "Run Vitest tests",
+      "test:ui": "Vitest with UI"
+    },
+    "backend": {
+      "start": "Run compiled JavaScript",
+      "build": "TypeScript compilation",
+      "dev": "Run with ts-node",
+      "test": "Jest tests",
+      "test:watch": "Jest in watch mode",
+      "test:coverage": "Jest with coverage"
+    },
+    "root": {
+      "dev": "Concurrently run frontend and backend",
+      "install-all": "Install dependencies in both folders",
+      "start:backend": "Start backend server",
+      "start:frontend": "Start frontend dev server",
+      "test:e2e": "Run E2E tests"
+    }
+  },
+  "key_dependencies": {
+    "state_management": "zustand",
+    "routing": "react-router-dom",
+    "ui_components": "Radix UI (accordion, dialog, dropdown, etc.)",
+    "form_handling": "react-hook-form + @hookform/resolvers + zod",
+    "styling": "tailwindcss + tailwind-merge + class-variance-authority",
+    "authentication": "jsonwebtoken + bcryptjs",
+    "http_client": "fetch (native)",
+    "backend_framework": "express",
+    "testing": "vitest + @testing-library/react + jest-dom"
+  },
+  "security_notes": [
+    "Passwords hashed with bcryptjs (10 salt rounds)",
+    "JWT tokens with 24-hour expiration",
+    "CORS enabled for cross-origin requests",
+    "Bearer token authentication for protected routes",
+    "No password strength validation on frontend",
+    "In-memory storage is NOT production-ready",
+    "JWT secret should use environment variable in production"
+  ],
+  "limitations": [
+    "No database persistence - data lost on server restart",
+    "No role-based access control",
+    "No email verification",
+    "No password reset functionality",
+    "No rate limiting or brute force protection",
+    "Client-side routing only - no server-side route protection",
+    "No refresh token mechanism",
+    "No user profile editing"
+  ]
+}
