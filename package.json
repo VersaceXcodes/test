@@ -1,0 +1,15 @@
+{
+  "name": "auth-e2e-project",
+  "version": "1.0.0",
+  "description": "Full stack project with auth e2e tests",
+  "scripts": {
+    "dev": "concurrently \"cd backend && npm run dev\" \"cd vitereact && npm run dev\"",
+    "install-all": "cd backend && npm install && cd ../vitereact && npm install",
+    "start:backend": "cd backend && npm run dev",
+    "start:frontend": "cd vitereact && npm run dev",
+    "test:e2e": "cd vitereact && npm run test"
+  },
+  "devDependencies": {
+    "concurrently": "^8.0.0"
+  }
+}
