@@ -94,12 +94,12 @@ export const useAppStore = create<AppState>()(
             { headers: { 'Content-Type': 'application/json' } }
           );
 
-          const { user, token } = response.data;
+          const { user, auth_token } = response.data;
 
           set(() => ({
             authentication_state: {
               current_user: user,
-              auth_token: token,
+              auth_token: auth_token,
               authentication_status: { is_authenticated: true, is_loading: false },
               error_message: null,
             },

@@ -17,8 +17,8 @@ import {
   notificationSchema, createNotificationInputSchema, searchNotificationInputSchema
 } from './schema';
 
-import pkg from 'pg';
-const { Pool } = pkg;
+import { PGlite } from '@electric-sql/pglite';
+import fs from 'fs';
 
 dotenv.config();
 
@@ -67,24 +67,43 @@ function createErrorResponse(message: string, error: any = null, errorCode: stri
   return response;
 }
 
-// PostgreSQL connection setup
-const { DATABASE_URL, PGHOST, PGDATABASE, PGUSER, PGPASSWORD, PGPORT = 5432, JWT_SECRET = 'your-secret-key' } = process.env;
+// PGlite database setup
+const { JWT_SECRET = 'your-secret-key' } = process.env;
 
-const pool = new Pool(
-  DATABASE_URL
-    ? {
-        connectionString: DATABASE_URL,
-        ssl: false,
+const db = new PGlite('./db');
+
+// Initialize database with schema
+const initializeDatabase = async () => {
+  try {
+    const schema = fs.readFileSync('./db.sql', 'utf-8');
+    const commands = schema.split(/(?=CREATE TABLE |INSERT INTO)/);
+    
+    for (const cmd of commands) {
+      if (cmd.trim()) {
+        await db.query(cmd);
       }
-    : {
-        host: PGHOST,
-        database: PGDATABASE,
-        user: PGUSER,
-        password: PGPASSWORD,
-        port: Number(PGPORT),
-        ssl: false,
+    }
+    console.log('Database initialized successfully');
+  } catch (error) {
+    console.log('Database initialization skipped (may already exist):', (error as any).message);
+  }
+};
+
+initializeDatabase();
+
+// Adapter for PGlite to work with pg-style code
+const pool = {
+  async connect() {
+    return {
+      async query(sql: string, params?: any[]) {
+        const result = await db.query(sql, params);
+        return result;
+      },
+      release() {
       }
-);
+    };
+  }
+};
 
 const app = express();
 
@@ -164,7 +183,7 @@ app.post('/api/auth/register', async (req, res) => {
       const created_at = new Date().toISOString();
       
       const result = await client.query(
-        'INSERT INTO users (user_id, email, name, password, created_at) VALUES ($1, $2, $3, $4, $5) RETURNING user_id, email, name, created_at',
+        'INSERT INTO users (user_id, email, name, password_hash, created_at) VALUES ($1, $2, $3, $4, $5) RETURNING user_id, email, name, created_at',
         [user_id, email.toLowerCase().trim(), name.trim(), password, created_at]
       );
 
@@ -228,7 +247,7 @@ app.post('/api/auth/login', async (req, res) => {
 
       const user = result.rows[0];
 
-      if (password !== user.password) {
+      if (password !== user.password_hash) {
         return res.status(400).json(createErrorResponse('Invalid email or password', null, 'INVALID_CREDENTIALS'));
       }
 

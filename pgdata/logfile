@@ -1,0 +1,5 @@
+2025-10-04 14:11:31.505 UTC [38798] LOG:  starting PostgreSQL 15.14 (Debian 15.14-0+deb12u1) on x86_64-pc-linux-gnu, compiled by gcc (Debian 12.2.0-14+deb12u1) 12.2.0, 64-bit
+2025-10-04 14:11:31.506 UTC [38798] LOG:  listening on IPv4 address "127.0.0.1", port 5432
+2025-10-04 14:11:31.507 UTC [38798] LOG:  listening on Unix socket "/var/run/postgresql/.s.PGSQL.5432"
+2025-10-04 14:11:31.516 UTC [38801] LOG:  database system was shut down at 2025-10-04 14:11:26 UTC
+2025-10-04 14:11:31.537 UTC [38798] LOG:  database system is ready to accept connections

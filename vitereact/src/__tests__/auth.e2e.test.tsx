@@ -4,7 +4,7 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { BrowserRouter } from 'react-router-dom';
 
-import AuthView from '@/components/views/UV_Login';
+import AuthView from '@/components/views/UV_Auth';
 import { useAppStore } from '@/store/main';
 
 const genEmail = () => `user${Date.now()}@example.com`;
@@ -14,7 +14,7 @@ const Wrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
   <BrowserRouter>{children}</BrowserRouter>
 );
 
-describe('Auth E2E (Vitest, real API) - Direct Component: UV_Login.tsx', () => {
+describe('Auth E2E (Vitest, real API) - Direct Component: UV_Auth.tsx', () => {
   beforeEach(() => {
     localStorage.clear();
     // Ensure store starts not loading and unauthenticated (no token)
@@ -33,6 +33,7 @@ describe('Auth E2E (Vitest, real API) - Direct Component: UV_Login.tsx', () => {
   });
 
   it('registers then signs in successfully against real API', async () => {
+    const user = userEvent.setup();
     const email = genEmail();
 
     render(<AuthView />, { wrapper: Wrapper });
@@ -40,7 +41,7 @@ describe('Auth E2E (Vitest, real API) - Direct Component: UV_Login.tsx', () => {
     // If the view supports a toggle into register mode, click it; otherwise proceed
     const toggleBtn = screen.queryByRole('button', { name: /sign up|create account|register/i });
     if (toggleBtn) {
-      await userEvent.click(toggleBtn);
+      await user.click(toggleBtn);
     }
 
     const emailInput = await screen.findByLabelText(/email address|email/i, {}, { timeout: 10000 });
@@ -55,13 +56,13 @@ describe('Auth E2E (Vitest, real API) - Direct Component: UV_Login.tsx', () => {
       (await screen.findByRole('button', { name: /sign in|log in/i }, { timeout: 10000 }));
 
     if (nameInput) {
-      await userEvent.type(nameInput, 'Test User');
+      await user.type(nameInput, 'Test User');
     }
-    await userEvent.type(emailInput, email);
-    await userEvent.type(passwordInput, PASSWORD);
+    await user.type(emailInput, email);
+    await user.type(passwordInput, PASSWORD);
 
     await waitFor(() => expect(submitBtn).not.toBeDisabled(), { timeout: 10000 });
-    await userEvent.click(submitBtn);
+    await user.click(submitBtn);
 
     // Wait for auth store to reflect registration/login
     await waitFor(
@@ -78,6 +79,16 @@ describe('Auth E2E (Vitest, real API) - Direct Component: UV_Login.tsx', () => {
       useAppStore.getState().logout_user();
     }
 
+    // Wait a bit for component to re-render after logout
+    await new Promise(resolve => setTimeout(resolve, 500));
+
+    // Check if we're in register mode, and switch to sign-in mode if needed
+    const toggleToSignIn = screen.queryByRole('button', { name: /already have an account/i });
+    if (toggleToSignIn) {
+      await user.click(toggleToSignIn);
+      await new Promise(resolve => setTimeout(resolve, 300));
+    }
+
     // Fill and sign-in
     const email2 = await screen.findByLabelText(/email address|email/i, {}, { timeout: 10000 });
     const password2 = await screen.findByLabelText(/password/i, {}, { timeout: 10000 });
@@ -85,13 +96,13 @@ describe('Auth E2E (Vitest, real API) - Direct Component: UV_Login.tsx', () => {
       (await screen.findByRole('button', { name: /sign in|log in/i }, { timeout: 10000 }).catch(() => null)) ||
       (await screen.findByRole('button', { name: /submit/i }, { timeout: 10000 }));
 
-    await userEvent.clear(email2);
-    await userEvent.type(email2, email);
-    await userEvent.clear(password2);
-    await userEvent.type(password2, PASSWORD);
+    await user.clear(email2);
+    await user.type(email2, email);
+    await user.clear(password2);
+    await user.type(password2, PASSWORD);
 
     await waitFor(() => expect(signInBtn).not.toBeDisabled(), { timeout: 10000 });
-    await userEvent.click(signInBtn);
+    await user.click(signInBtn);
 
     await waitFor(
       () => {
