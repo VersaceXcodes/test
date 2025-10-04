@@ -1,4 +1,4 @@
-app = "test"
+app = "test-app-2025"
 primary_region = 'cdg'
 
 [build]
