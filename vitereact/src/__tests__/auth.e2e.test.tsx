@@ -4,7 +4,7 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { BrowserRouter } from 'react-router-dom';
 
-import AuthView from '@/components/views/UV_Login.tsx';
+import AuthView from '@/components/views/UV_Login';
 import { useAppStore } from '@/store/main';
 
 const genEmail = () => `user${Date.now()}@example.com`;
