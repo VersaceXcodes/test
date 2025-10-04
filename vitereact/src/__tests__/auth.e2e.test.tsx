@@ -43,8 +43,8 @@ describe('Auth E2E (Vitest, real API) - Direct Component: UV_Login.tsx', () => {
       await userEvent.click(toggleBtn);
     }
 
-    const emailInput = await screen.findByLabelText(/email address|email/i, { timeout: 10000 });
-    const passwordInput = await screen.findByLabelText(/password/i, { timeout: 10000 });
+    const emailInput = await screen.findByLabelText(/email address|email/i, {}, { timeout: 10000 });
+    const passwordInput = await screen.findByLabelText(/password/i, {}, { timeout: 10000 });
 
     // Optional name field for register mode
     const nameInput = screen.queryByLabelText(/full name|name/i);
@@ -79,8 +79,8 @@ describe('Auth E2E (Vitest, real API) - Direct Component: UV_Login.tsx', () => {
     }
 
     // Fill and sign-in
-    const email2 = await screen.findByLabelText(/email address|email/i, { timeout: 10000 });
-    const password2 = await screen.findByLabelText(/password/i, { timeout: 10000 });
+    const email2 = await screen.findByLabelText(/email address|email/i, {}, { timeout: 10000 });
+    const password2 = await screen.findByLabelText(/password/i, {}, { timeout: 10000 });
     const signInBtn =
       (await screen.findByRole('button', { name: /sign in|log in/i }, { timeout: 10000 }).catch(() => null)) ||
       (await screen.findByRole('button', { name: /submit/i }, { timeout: 10000 }));
